@@ -263,6 +263,7 @@ class ChristianHolidays:
         some countries.
         https://en.wikipedia.org/wiki/Easter_Monday
         """
+        print("OMIT [easterdate($Uy)+1] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self.__get_easter_sunday(calendar), +1))
 
     def _add_easter_sunday(self, name, calendar=None) -> date:
@@ -274,6 +275,7 @@ class ChristianHolidays:
         from the dead.
         https://en.wikipedia.org/wiki/Easter
         """
+        print("OMIT [easterdate($Uy)] MSG %s" % (name))
         return self._add_holiday(name, self.__get_easter_sunday(calendar))
 
     def _add_easter_tuesday(self, name, calendar=None) -> date:
@@ -283,6 +285,7 @@ class ChristianHolidays:
         Easter Tuesday is the third day of Eastertide and is a holiday in some areas.
         https://en.wikipedia.org/wiki/Easter_Tuesday
         """
+        print("OMIT [easterdate($Uy+2)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self.__get_easter_sunday(calendar), +2))
 
     def _add_epiphany_day(self, name, calendar=None) -> date:
@@ -312,6 +315,7 @@ class ChristianHolidays:
         Great Friday, Great and Holy Friday.
         https://en.wikipedia.org/wiki/Good_Friday
         """
+        print("OMIT [easterdate($Uy)-2] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self.__get_easter_sunday(calendar), -2))
 
     def _add_holy_saturday(self, name) -> date:
@@ -321,6 +325,7 @@ class ChristianHolidays:
         Great and Holy Saturday is a day between Good Friday and Easter Sunday.
         https://en.wikipedia.org/wiki/Holy_Saturday
         """
+        print("OMIT [easterdate($Uy)-1] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -1))
 
     def _add_holy_thursday(self, name) -> date:
@@ -332,6 +337,7 @@ class ChristianHolidays:
         Jesus Christ with the Apostles, as described in the canonical gospels.
         https://en.wikipedia.org/wiki/Maundy_Thursday
         """
+        print("OMIT [easterdate($Uy)-3] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -3))
 
     def _add_immaculate_conception_day(self, name) -> date:
@@ -363,6 +369,7 @@ class ChristianHolidays:
         Palm Sunday marks the first day of Holy Week.
         https://en.wikipedia.org/wiki/Palm_Sunday
         """
+        print("OMIT [easterdate($Uy)-7] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -7))
 
     def _add_rejoicing_day(self, name) -> date:
@@ -374,6 +381,7 @@ class ChristianHolidays:
         Pascha (Easter).In Ukrainian tradition it is called Provody.
         https://en.wikipedia.org/wiki/Radonitsa
         """
+        print("OMIT [easterdate($Uy)+9] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +9))
 
     def _add_saint_georges_day(self, name) -> date:
@@ -436,6 +444,7 @@ class ChristianHolidays:
         https://en.wikipedia.org/wiki/Pentecost
         https://en.wikipedia.org/wiki/Whit_Monday
         """
+        print("OMIT [easterdate($Uy)+50] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +50))
 
     def _add_whit_sunday(self, name) -> date:
@@ -448,4 +457,5 @@ class ChristianHolidays:
         Feast of Weeks.
         https://en.wikipedia.org/wiki/Pentecost
         """
+        print("OMIT [easterdate($Uy)+49] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +49))

@@ -443,10 +443,7 @@ class HolidayBase(dict[date, str]):
             if len(tokens) == 5:
                 *_, month, day = tokens
                 if month in MONTHS and day in DAYS:
-                    return lambda name: self._add_holiday(
-                        name,
-                        date(self._year, MONTHS[month], int(day)),
-                    )
+                    return lambda name: (print("OMIT %s %s MSG %s" % (day, month, self.tr(name))), self._add_holiday(name,date(self._year, MONTHS[month], int(day))))[-1]
 
             elif len(tokens) == 7:
                 # Handle <last/nth> <weekday> of <month> patterns (e.g.,
@@ -458,15 +455,15 @@ class HolidayBase(dict[date, str]):
                     and month in MONTHS
                     and weekday in WEEKDAYS
                 ):
-                    return lambda name: self._add_holiday(
+                    return lambda name: (print("REM %s %s in %s SCANFROM -7 ADDOMIT MSG %s" % (number, weekday, month, name)), self._add_holiday(
                         name,
                         _get_nth_weekday_of_month(
                             -1 if number == "last" else int(number[0]),
                             WEEKDAYS[weekday],
                             MONTHS[month],
                             self._year,
-                        ),
-                    )
+                        ))
+                    )[-1]
 
                 # Handle <n> days <past/prior> easter patterns (e.g.,
                 # _add_holiday_8_days_past_easter() or
@@ -479,12 +476,12 @@ class HolidayBase(dict[date, str]):
                     and len(days) < 3
                     and days.isdigit()
                 ):
-                    return lambda name: self._add_holiday(
+                    return lambda name: (print("OMIT [easterdate($Uy)%s%s] MSG %s" % ("+" if delta_direction == "past" else "-", days, name)), self._add_holiday(
                         name,
                         _timedelta(
                             self._easter_sunday,
                             +int(days) if delta_direction == "past" else -int(days),
-                        ),
+                        ))
                     )
 
             # Handle <n> day(s) <past/prior> <last/<nth> <weekday> of <month> patterns (e.g.,
