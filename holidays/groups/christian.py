@@ -35,6 +35,11 @@ class ChristianHolidays:
         calendar = calendar or self.__calendar
         self.__verify_calendar(calendar)
 
+        if self.__is_julian_calendar(calendar):
+            print("OMIT 7 January MSG Christmas Day")
+        else:
+            print("OMIT 25 December MSG Christmas Day")
+
         return (
             date(self._year, JAN, 7)
             if self.__is_julian_calendar(calendar)
