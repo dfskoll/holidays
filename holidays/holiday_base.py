@@ -481,8 +481,8 @@ class HolidayBase(dict[date, str]):
                         _timedelta(
                             self._easter_sunday,
                             +int(days) if delta_direction == "past" else -int(days),
-                        ))
-                    )
+                        )))[-1]
+
 
             # Handle <n> day(s) <past/prior> <last/<nth> <weekday> of <month> patterns (e.g.,
             # _add_holiday_1_day_past_1st_fri_of_aug() or

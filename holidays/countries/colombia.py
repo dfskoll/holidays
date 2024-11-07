@@ -84,7 +84,6 @@ class Colombia(ObservedHolidayBase, ChristianHolidays, InternationalHolidays):
             )
 
         if self._year >= 1951:
-            # Saint Peter and Saint Paul's Day.
             self._move_holiday(self._add_saints_peter_and_paul_day(tr("San Pedro y San Pablo")))
 
         # Independence Day.

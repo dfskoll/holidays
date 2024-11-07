@@ -218,6 +218,7 @@ class ObservedHolidayBase(HolidayBase):
     def _move_holiday(
         self, dt: date, rule: Optional[ObservedRule] = None, show_observed_label: bool = True
     ) -> tuple[bool, Optional[date]]:
+        print("XXX DT = ", dt)
         is_observed, dt_observed = self._add_observed(
             dt, rule=rule, show_observed_label=show_observed_label
         )
