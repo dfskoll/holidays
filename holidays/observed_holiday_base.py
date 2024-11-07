@@ -135,6 +135,31 @@ class ObservedHolidayBase(HolidayBase):
 
         return dt
 
+    def _output_rem_for_observed(
+            self,
+            dt: DateArg,
+            name: Optional[str] = None,
+            rule: Optional[ObservedRule] = None,
+            show_observed_label: bool = True,
+            ) -> None:
+        # We exhaustively go through all the rules
+        if rule == MON_TO_NEXT_TUE:
+            next = _timedelta(dt, 1)
+            print("REM month_%d %d SATISFY [$Tw == 2] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
+        elif rule == TUE_TO_PREV_FRI:
+            next = _timedelta(d, -4)
+            print("REM month_%d %d SATISFY [$Tw == 5] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
+        elif rule == WED_TO_PREV_MON:
+            next = _timedelta(d, -2)
+            print("REM month_%d %d SATISFY [$Tw == 1] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
+        elif rule == WED_TO_NEXT_FRI:
+            next = _timedelta(d, 2)
+            print("REM month_%d %d SATISFY [$Tw == 5] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
+        elif rule == SAT_SUN_TO_NEXT_MON:
+            next = _timedelta(dt, 1)
+            print("REM month_%d %d SATISFY [$Tw == 1] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
+            next = _timedelta(dt, 2)
+            print("REM month_%d %d SATISFY [$Tw == 1] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
     def _add_observed(
         self,
         dt: DateArg,
@@ -146,6 +171,8 @@ class ObservedHolidayBase(HolidayBase):
 
         if not self.observed or not self._is_observed(dt):
             return False, dt
+
+        self._output_rem_for_observed(dt, name or self.get_list(dt)[0], rule or self._observed_rule, show_observed_label)
 
         dt_observed = self._get_observed_date(dt, rule or self._observed_rule)
         if dt_observed == dt:
