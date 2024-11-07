@@ -35,11 +35,6 @@ class ChristianHolidays:
         calendar = calendar or self.__calendar
         self.__verify_calendar(calendar)
 
-        if self.__is_julian_calendar(calendar):
-            print("OMIT 7 January MSG Christmas Day")
-        else:
-            print("OMIT 25 December MSG Christmas Day")
-
         return (
             date(self._year, JAN, 7)
             if self.__is_julian_calendar(calendar)
@@ -127,6 +122,7 @@ class ChristianHolidays:
         Day, or sometimes Holy Thursday.
         https://en.wikipedia.org/wiki/Feast_of_the_Ascension
         """
+        print("OMIT [easterdate($Uy+39)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +39))
 
     def _add_ash_monday(self, name) -> date:
@@ -137,6 +133,7 @@ class ChristianHolidays:
         or Green Monday. The first day of Great Lent.
         https://en.wikipedia.org/wiki/Clean_Monday
         """
+        print("OMIT [easterdate($Uy-48)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -48))
 
     def _add_ash_wednesday(self, name) -> date:
@@ -146,6 +143,7 @@ class ChristianHolidays:
         A holy day of prayer and fasting. It marks the beginning of Lent.
         https://en.wikipedia.org/wiki/Ash_Wednesday
         """
+        print("OMIT [easterdate($Uy-46)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -46))
 
     def _add_assumption_of_mary_day(self, name, calendar=None) -> date:
@@ -186,6 +184,7 @@ class ChristianHolidays:
         the liturgical season of Lent.
         https://en.wikipedia.org/wiki/Carnival
         """
+        print("OMIT [easterdate($Uy-49)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -49))
 
     def _add_carnival_monday(self, name) -> date:
@@ -196,6 +195,7 @@ class ChristianHolidays:
         the liturgical season of Lent.
         https://en.wikipedia.org/wiki/Carnival
         """
+        print("OMIT [easterdate($Uy-48)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -48))
 
     def _add_carnival_tuesday(self, name) -> date:
@@ -206,6 +206,7 @@ class ChristianHolidays:
         the liturgical season of Lent.
         https://en.wikipedia.org/wiki/Carnival
         """
+        print("OMIT [easterdate($Uy-47)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -47))
 
     def _add_christmas_day(self, name, calendar=None) -> date:
@@ -216,6 +217,11 @@ class ChristianHolidays:
         Jesus Christ.
         https://en.wikipedia.org/wiki/Christmas
         """
+        if self.__is_julian_calendar(calendar):
+            print("OMIT 7 January MSG %s" % (name))
+        else:
+            print("OMIT 25 December MSG %s" % (name))
+
         return self._add_holiday(name, self.__get_christmas_day(calendar))
 
     def _add_christmas_day_two(self, name, calendar=None) -> date:
@@ -226,6 +232,11 @@ class ChristianHolidays:
         https://en.wikipedia.org/wiki/Boxing_Day
         https://en.wikipedia.org/wiki/Christmas
         """
+        if self.__is_julian_calendar(calendar):
+            print("OMIT 8 January MSG %s" % (name))
+        else:
+            print("OMIT 26 December MSG %s" % (name))
+
         return self._add_holiday(name, _timedelta(self.__get_christmas_day(calendar), +1))
 
     def _add_christmas_day_three(self, name, calendar=None) -> date:
@@ -235,6 +246,11 @@ class ChristianHolidays:
         A holiday celebrated 2 days after Christmas Day (in some countries).
         https://en.wikipedia.org/wiki/Christmas
         """
+        if self.__is_julian_calendar(calendar):
+            print("OMIT 9 January MSG %s" % (name))
+        else:
+            print("OMIT 27 December MSG %s" % (name))
+
         return self._add_holiday(name, _timedelta(self.__get_christmas_day(calendar), +2))
 
     def _add_christmas_eve(self, name, calendar=None) -> date:
@@ -245,6 +261,11 @@ class ChristianHolidays:
         the festival commemorating the birth of Jesus Christ.
         https://en.wikipedia.org/wiki/Christmas_Eve
         """
+        if self.__is_julian_calendar(calendar):
+            print("OMIT 6 January MSG %s" % (name))
+        else:
+            print("OMIT 24 December MSG %s" % (name))
+
         return self._add_holiday(name, _timedelta(self.__get_christmas_day(calendar), -1))
 
     def _add_corpus_christi_day(self, name) -> date:
@@ -257,6 +278,7 @@ class ChristianHolidays:
         of Jesus Christ in the elements of the Eucharist.
         https://en.wikipedia.org/wiki/Feast_of_Corpus_Christi
         """
+        print("OMIT [easterdate($Uy+60)] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +60))
 
     def _add_easter_monday(self, name, calendar=None) -> date:

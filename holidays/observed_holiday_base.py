@@ -161,11 +161,11 @@ class ObservedHolidayBase(HolidayBase):
                 wd = wd + 1
                 if (wd == 7):
                     wd = 0
-                print("REM month_%d %d SATISFY [$Tw == %d] SCANFROM -7 ADDOMIT MSG %s" % (dt_next.month, dt_next.day, wd, name))
+                print("REM %d month_%d SATISFY [$Tw == %d] SCANFROM -28 ADDOMIT MSG %s" % (dt_next.day, dt_next.month, wd, name))
             elif (adj == 7):
-                print("REM month_%d %d OMIT SAT SUN AFTER ADDOMIT SCANFROM -7 MSG %s" % (dt.month, dt.day, name))
+                print("REM %d month_%d OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 MSG %s" % (dt.day, dt.month, name))
             elif (adj == -7):
-                print("REM month_%d %d OMIT SAT SUN BEFORE ADDOMIT SCANFROM -7 MSG %s" % (dt.month, dt.day, name))
+                print("REM %d month_%d OMIT SAT SUN BEFORE ADDOMIT SCANFROM -28 MSG %s" % (dt.day, dt.month, name))
         return None
 
         raise Exception("Unhandled ObservedRule")
@@ -227,7 +227,6 @@ class ObservedHolidayBase(HolidayBase):
         is_observed, dt_observed = self._add_observed(
             dt, rule=rule, show_observed_label=show_observed_label
         )
-        print("## RMPREV")
         if is_observed:
             self.pop(dt)
         return is_observed, dt_observed if is_observed else dt

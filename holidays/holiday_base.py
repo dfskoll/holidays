@@ -455,7 +455,7 @@ class HolidayBase(dict[date, str]):
                     and month in MONTHS
                     and weekday in WEEKDAYS
                 ):
-                    return lambda name: (print("REM %s %s in %s SCANFROM -7 ADDOMIT MSG %s" % (number, weekday, month, name)), self._add_holiday(
+                    return lambda name: (print("REM %s %s in %s SCANFROM -28 ADDOMIT MSG %s" % (number, weekday, month, name)), self._add_holiday(
                         name,
                         _get_nth_weekday_of_month(
                             -1 if number == "last" else int(number[0]),
