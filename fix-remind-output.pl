@@ -43,6 +43,64 @@ my $map = {
             'month_12' => 'December',
 };
 
+my $month_to_num = {
+            'january' => 0,
+            'february' => 1,
+            'march' => 2,
+            'april' => 3,
+            'may' => 4,
+            'june' => 5,
+            'july' => 6,
+            'august' => 7,
+            'september' => 8,
+            'october' => 9,
+            'november' => 10,
+            'december' => 11,
+};
+
+my $num_to_month = {
+        0 => 'January',
+        1 => 'February',
+        2 => 'March',
+        3 => 'April',
+        4 => 'May',
+        5 => 'June',
+        6 => 'July',
+        7 => 'August',
+        8 => 'September',
+        9 => 'October',
+        10 => 'November',
+        11 => 'December',
+};
+
+my $wkday_to_num = {
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+};
+
+my $num_to_wkday = {
+        0 => 'Sunday',
+        1 => 'Monday',
+        2 => 'Tuesday',
+        3 => 'Wednesday',
+        4 => 'Thursday',
+        5 => 'Friday',
+        6 => 'Saturday',
+};
+
+my $ordinal_to_num = {
+        first => 1,
+        second => 2,
+        third => 3,
+        fourth => 4,
+        'last' => -1
+};
+
 my @lines = ();
 my $in_subdiv = 0;
 my $country = '';
@@ -68,11 +126,43 @@ while(<>) {
         while (my ($k, $v) = each(%$map)) {
                 $line =~ s/\b$k\b/$v/g;
         }
+        $line = fixup_line($line);
         next if $country_lines->{$country}->{$line};
         push(@lines, $line);
         if (!$in_subdiv) {
                 $country_lines->{$country}->{$line} = 1;
         }
+}
+
+sub fixup_line_1
+{
+        my ($line) = @_;
+        return $line unless $line =~ /^(.*) MSG (.*)/;
+        my $first = $1;
+        my $second = $2;
+        my (undef, $days, $direction, $ordinal, $weekday, $month) = split(/ /, $first);
+        my $ordnum = $ordinal_to_num->{lc($ordinal)};
+        my $wkdaynum = $wkday_to_num->{lc($weekday)};
+        my $monnum = $month_to_num->{lc($month)};
+        print "# $days, $direction, $ordinal($ordnum), $weekday($wkdaynum), $month($monnum) MSG $second\n";
+}
+
+sub fixup_line_2
+{
+        my ($line) = @_;
+        return $line;
+}
+
+sub fixup_line
+{
+        my ($line) = @_;
+        return $line unless ($line =~ /^FIXUP([12])/);
+        if ($1 eq '1') {
+                return fixup_line_1($line);
+        } elsif ($1 eq '2') {
+                return fixup_line_2($line);
+        }
+        return $line;
 }
 
 sub output

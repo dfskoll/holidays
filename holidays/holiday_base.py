@@ -499,7 +499,7 @@ class HolidayBase(dict[date, str]):
                     and month in MONTHS
                     and weekday in WEEKDAYS
                 ):
-                    return lambda name: self._add_holiday(
+                    return lambda name: (print("FIXUP1 %s %s %s %s %s MSG %s" % (days, delta_direction, number, weekday, month, name)), self._add_holiday(
                         name,
                         _timedelta(
                             _get_nth_weekday_of_month(
@@ -509,8 +509,8 @@ class HolidayBase(dict[date, str]):
                                 self._year,
                             ),
                             +int(days) if delta_direction == "past" else -int(days),
-                        ),
-                    )
+                        )
+                    ))[-1]
 
             # Handle <nth> <weekday> <before/from> <month> <day> patterns (e.g.,
             # _add_holiday_1st_mon_before_jun_15() or _add_holiday_1st_mon_from_jun_15()).
@@ -523,14 +523,14 @@ class HolidayBase(dict[date, str]):
                     and weekday in WEEKDAYS
                     and day in DAYS
                 ):
-                    return lambda name: self._add_holiday(
+                    return lambda name: (print("FIXUP2 %s %s %s %s %s MSG %s" % (number, weekday, date_direction, month, day, name)), self._add_holiday(
                         name,
                         _get_nth_weekday_from(
                             -int(number[0]) if date_direction == "before" else +int(number[0]),
                             WEEKDAYS[weekday],
                             date(self._year, MONTHS[month], int(day)),
                         ),
-                    )
+                    ))[-1]
 
             raise e  # No match.
 
