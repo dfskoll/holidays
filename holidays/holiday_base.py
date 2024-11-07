@@ -443,7 +443,7 @@ class HolidayBase(dict[date, str]):
             if len(tokens) == 5:
                 *_, month, day = tokens
                 if month in MONTHS and day in DAYS:
-                    return lambda name: (print("OMIT %s %s MSG %s" % (day, month, self.tr(name))), self._add_holiday(name,date(self._year, MONTHS[month], int(day))))[-1]
+                    return lambda name: (print("OMIT %s %s MSG %s" % (day, month, name)), self._add_holiday(name,date(self._year, MONTHS[month], int(day))))[-1]
 
             elif len(tokens) == 7:
                 # Handle <last/nth> <weekday> of <month> patterns (e.g.,

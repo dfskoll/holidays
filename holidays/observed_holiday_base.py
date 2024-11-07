@@ -143,6 +143,9 @@ class ObservedHolidayBase(HolidayBase):
             show_observed_label: bool = True,
             ) -> None:
 
+        if show_observed_label:
+            name = self.observed_label % name
+
         # Use a general procedure for most of the cases
         for (entry) in rule:
             adj = rule[entry]
@@ -158,8 +161,11 @@ class ObservedHolidayBase(HolidayBase):
                 wd = wd + 1
                 if (wd == 7):
                     wd = 0
-                print("REM month_%d %d SATISFY [$Tw == %d] SCANFROM -7 ADDOMIT MSG %s %s" % (dt_next.month, dt_next.day, wd, name, "(observed)"))
-
+                print("REM month_%d %d SATISFY [$Tw == %d] SCANFROM -7 ADDOMIT MSG %s" % (dt_next.month, dt_next.day, wd, name))
+            elif (adj == 7):
+                print("REM month_%d %d OMIT SAT SUN AFTER ADDOMIT SCANFROM -7 MSG %s" % (dt.month, dt.day, name))
+            elif (adj == -7):
+                print("REM month_%d %d OMIT SAT SUN BEFORE ADDOMIT SCANFROM -7 MSG %s" % (dt.month, dt.day, name))
         return None
 
         raise Exception("Unhandled ObservedRule")
@@ -218,10 +224,10 @@ class ObservedHolidayBase(HolidayBase):
     def _move_holiday(
         self, dt: date, rule: Optional[ObservedRule] = None, show_observed_label: bool = True
     ) -> tuple[bool, Optional[date]]:
-        print("XXX DT = ", dt)
         is_observed, dt_observed = self._add_observed(
             dt, rule=rule, show_observed_label=show_observed_label
         )
+        print("## RMPREV")
         if is_observed:
             self.pop(dt)
         return is_observed, dt_observed if is_observed else dt

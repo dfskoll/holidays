@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
 my $map = {
         '1st' => 'First',
             '2nd' => 'Second',
@@ -44,10 +43,46 @@ my $map = {
             'month_12' => 'December',
 };
 
+my @lines = ();
+my $in_subdiv = 0;
+my $country = '';
+my $country_lines = {};
 while(<>) {
         my $line = $_;
+        if ($line =~ /^# COUNTRY\s*(\S+)/) {
+                $country = $1;
+                output(\@lines);
+                @lines = ();
+                $in_subdiv = 0;
+                print $line;
+                next;
+        } elsif ($line =~ /^# SUBDIV/) {
+                output(\@lines);
+                $in_subdiv = 1;
+                @lines = ();
+                print $line;
+                next;
+        }
+
+        next if $line =~ /EASTERN:/;
         while (my ($k, $v) = each(%$map)) {
                 $line =~ s/\b$k\b/$v/g;
         }
-        print $line;
+        next if $country_lines->{$country}->{$line};
+        push(@lines, $line);
+        if (!$in_subdiv) {
+                $country_lines->{$country}->{$line} = 1;
+        }
+}
+
+sub output
+{
+        my ($lines) = @_;
+        @$lines = sort { $a cmp $b } (@$lines);
+        my $prev = '';
+        foreach my $line (@$lines) {
+                next if $line eq $prev;
+                $prev = $line;
+                print $line;
+        }
 }
