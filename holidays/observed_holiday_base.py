@@ -142,24 +142,28 @@ class ObservedHolidayBase(HolidayBase):
             rule: Optional[ObservedRule] = None,
             show_observed_label: bool = True,
             ) -> None:
-        # We exhaustively go through all the rules
-        if rule == MON_TO_NEXT_TUE:
-            next = _timedelta(dt, 1)
-            print("REM month_%d %d SATISFY [$Tw == 2] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
-        elif rule == TUE_TO_PREV_FRI:
-            next = _timedelta(d, -4)
-            print("REM month_%d %d SATISFY [$Tw == 5] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
-        elif rule == WED_TO_PREV_MON:
-            next = _timedelta(d, -2)
-            print("REM month_%d %d SATISFY [$Tw == 1] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
-        elif rule == WED_TO_NEXT_FRI:
-            next = _timedelta(d, 2)
-            print("REM month_%d %d SATISFY [$Tw == 5] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
-        elif rule == SAT_SUN_TO_NEXT_MON:
-            next = _timedelta(dt, 1)
-            print("REM month_%d %d SATISFY [$Tw == 1] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
-            next = _timedelta(dt, 2)
-            print("REM month_%d %d SATISFY [$Tw == 1] SCANFROM -7 ADDOMIT MSG %s %s" % (next.month, next.day, name, "(observed)"))
+
+        # Use a general procedure for most of the cases
+        for (entry) in rule:
+            adj = rule[entry]
+            if (adj != None and adj > -7 and adj < 7):
+                dt_next = _timedelta(dt, adj)
+                wd = entry + adj;
+                if (wd < 0):
+                    wd = wd + 7
+                if (wd > 6):
+                    wd = wd - 7
+
+                # In Remind, 0 == Sunday, not Monday, so adjust
+                wd = wd + 1
+                if (wd == 7):
+                    wd = 0
+                print("REM month_%d %d SATISFY [$Tw == %d] SCANFROM -7 ADDOMIT MSG %s %s" % (dt_next.month, dt_next.day, wd, name, "(observed)"))
+
+        return None
+
+        raise Exception("Unhandled ObservedRule")
+
     def _add_observed(
         self,
         dt: DateArg,
