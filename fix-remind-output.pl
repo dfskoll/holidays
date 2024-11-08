@@ -457,7 +457,7 @@ sub calculate_sort_number
                 $mon = 3;
                 $day = 15;
                 my $ans = $mon*31 + $day;
-                if ($line =~ /Uy\)+(\d+)/) {
+                if ($line =~ /Uy\)\+(\d+)/) {
                         $ans += $1;
                 } elsif ($line =~ /Uy\)-(\d+)/) {
                         $ans -= $1;
