@@ -224,6 +224,7 @@ sub fixup_working_day_line
         my($rem, $day, $month, $omit) = split(/ /, $line);
         my $monnum = $month_to_num->{lc($month)} + 1;
         $line =~ s/ OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 / OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 MAYBE-UNCOMPUTABLE SATISFY [wkdaynum(date(\$Ty, $monnum, $day))==0 || wkdaynum(date(\$Ty, $monnum, $day))==6] /;
+        $line =~ s/ OMIT SAT SUN BEFORE ADDOMIT SCANFROM -28 / OMIT SAT SUN BEFORE ADDOMIT SCANFROM -28 MAYBE-UNCOMPUTABLE SATISFY [wkdaynum(date(\$Ty, $monnum, $day))==0 || wkdaynum(date(\$Ty, $monnum, $day))==6] /;
         return $line;
 }
 
