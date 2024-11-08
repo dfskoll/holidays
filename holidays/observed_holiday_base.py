@@ -151,7 +151,12 @@ class ObservedHolidayBase(HolidayBase):
             adj = rule[entry]
             if (adj != None and adj > -7 and adj < 7):
                 dt_next = _timedelta(dt, adj)
-                wd = entry + adj;
+                wd_orig = entry
+                # In Remind, 0 == Sunday, not Monday, so adjust
+                wd_orig = wd_orig + 1
+                if (wd_orig == 7):
+                    wd_orig = 0
+                wd = entry + adj
                 if (wd < 0):
                     wd = wd + 7
                 if (wd > 6):
@@ -161,7 +166,7 @@ class ObservedHolidayBase(HolidayBase):
                 wd = wd + 1
                 if (wd == 7):
                     wd = 0
-                print("REM %d month_%d SCANFROM -28 ADDOMIT SATISFY [$Tw == %d] MSG %s" % (dt_next.day, dt_next.month, wd, name))
+                print("REM %d month_%d SCANFROM -28 ADDOMIT SATISFY [wkdaynum(date($Ty, %d, %d)) == %d] MSG %s" % (dt_next.day, dt_next.month, dt.month, dt.day, wd_orig, name))
             elif (adj == 7):
                 print("REM %d month_%d OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 MSG %s" % (dt.day, dt.month, name))
             elif (adj == -7):
