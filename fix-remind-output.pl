@@ -102,24 +102,38 @@ my $ordinal_to_num = {
         'last' => -1
 };
 
+my $output_dir = $ARGV[0];
+if (defined($output_dir)) {
+        if (! -d $output_dir) {
+                mkdir($output_dir) or die("Cannot create $output_dir: $!");
+        }
+}
+
 my @lines = ();
 my $in_subdiv = 0;
-my $country = '';
+my $country;
+my $subdivs;
+my $long_name;
+my $subdiv;
 my $country_lines = {};
-while(<>) {
+while(<STDIN>) {
         my $line = $_;
-        if ($line =~ /^# COUNTRY\s*(\S+)/) {
-                $country = $1;
+        if ($line =~ /^# COUNTRY\s+(\S+)\s+(\d+)\s+(\S.*)$/) {
                 output(\@lines);
+                $country = $1;
+                $subdivs = $2;
+                $long_name = $3;
                 @lines = ();
                 $in_subdiv = 0;
-                print $line;
+                $subdiv = undef;
+                print $line unless defined($output_dir);
                 next;
-        } elsif ($line =~ /^# SUBDIV/) {
+        } elsif ($line =~ /^# SUBDIV\s+(.*)/) {
                 output(\@lines);
                 $in_subdiv = 1;
+                $subdiv = $1;
                 @lines = ();
-                print $line;
+                print $line unless defined($output_dir);
                 next;
         }
 
@@ -133,6 +147,10 @@ while(<>) {
         if (!$in_subdiv) {
                 $country_lines->{$country}->{$line} = 1;
         }
+}
+
+if (scalar(@lines)) {
+        output(\@lines);
 }
 
 sub fixup_line_1
@@ -187,7 +205,6 @@ sub fixup_line_2
                         if ($monnum < 0) {
                                 $monnum = 11;
                         }
-                        print STDERR $monnum . "\n";
                         $day += $month_days->[$monnum];
                 }
         }
@@ -206,15 +223,76 @@ sub fixup_line
         return $line;
 }
 
+sub open_output_file
+{
+        return undef unless $country;
+        my $fp;
+        my $lcc = lc($country);
+        if ($subdiv) {
+                my $lcs = lc($subdiv);
+                if (! -d "$output_dir/$lcc") {
+                        mkdir("$output_dir/$lcc") or die("Cannot create directory $output_dir/$lcc: $!");
+                }
+                open($fp, '>', "$output_dir/$lcc/$lcs.rem") or die("Cannot open $output_dir/$lcc/$lcs.rem for writing: $!");
+                print $fp <<"EOF";
+# SPDX-License-Identifier: MIT
+# Holiday file for subdivision $subdiv in $long_name
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+#
+# Note that this file includes only the holidays for
+# the specific subdivision $subdiv.
+#
+# If you want the national holidays as well, you must
+# also include [\$SysInclude]/$lcc.rem
+
+EOF
+        } else {
+                open($fp, '>', "$output_dir/$lcc.rem") or die("Cannot open $output_dir/$lcc.rem for writing: $!");
+                print $fp <<"EOF";
+# SPDX-License-Identifier: MIT
+# Holiday file for $long_name
+# Derived from the Python holidays project at
+# https://github.com/vacanza/holidays
+EOF
+                if ($subdivs > 0) {
+                        print $fp <<"EOF";
+#
+# Note: This file consists only of the country-wide
+# holidays for $long_name.
+#
+# For region-specific holidays, you need to include
+# one of the regional *.rem files in the directory
+# [\$SysInclude]/$lcc/
+EOF
+                }
+                $fp->print("\n");
+        }
+        return $fp;
+}
+
 sub output
 {
         my ($lines) = @_;
+        my $fp;
+
+        return unless scalar(@$lines);
+        if ($output_dir) {
+                $fp = open_output_file();
+        }
         @$lines = sort { sort_function($a, $b) } (@$lines);
         my $prev = '';
         foreach my $line (@$lines) {
                 next if $line eq $prev;
                 $prev = $line;
-                print $line;
+                if ($output_dir) {
+                        $fp->print($line);
+                } else {
+                        print $line;
+                }
+        }
+        if ($output_dir) {
+                $fp->close();
         }
 }
 
