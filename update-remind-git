@@ -1,0 +1,41 @@
+#!/bin/sh
+if ! test -x ./extract_all_holiday_info.py; then
+    echo "Please run this from the top-level holidays directory"
+    exit 1
+fi
+
+OUT=rem-holidays
+COPYTO=../Remind.git/include/holidays/
+
+echo "Generating *.rem files..."
+rm -rf $OUT
+./extract_all_holiday_info.py | ./fix-remind-output.pl $OUT || exit 1
+
+echo "Copying *.rem files to $COPYTO..."
+REMS=`find $OUT -type f -name '*.rem'`
+
+for file in $REMS; do
+    src=`echo $file | sed -e "s|^$OUT/||"`
+    dst="$COPYTO$src"
+    dstdir=`dirname $dst`
+
+    do_copy=0
+    if ! test -f $dst ; then
+        do_copy=1
+    else
+        grep '# Derived from the Python holidays project' $dst > /dev/null 2>&1
+        if test $? = 0 ; then
+            grep -i '# Hand-Edited' $dst > /dev/null 2>&1
+            if test $? != 0 ; then
+                do_copy=1
+            fi
+        fi
+    fi
+
+    if test $do_copy != 1 ; then
+        continue
+    fi
+
+    mkdir -p $dstdir > /dev/null 2>&1
+    cp $OUT/$src $dst
+done
