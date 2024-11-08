@@ -60,6 +60,7 @@ SAT_TO_NONE = ObservedRule({SAT: None})
 
 SUN_TO_NEXT_MON = ObservedRule({SUN: +1})
 SUN_TO_NEXT_TUE = ObservedRule({SUN: +2})
+SAT_TO_MON_AND_SUN_MON_TO_NEXT_TUE = ObservedRule({SAT: +2, SUN: +2, MON: +1})
 SUN_TO_NEXT_WED = ObservedRule({SUN: +3})
 SUN_TO_NEXT_WORKDAY = ObservedRule({SUN: +7})
 SUN_TO_NONE = ObservedRule({SUN: None})

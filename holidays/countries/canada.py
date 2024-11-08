@@ -22,6 +22,7 @@ from holidays.observed_holiday_base import (
     ALL_TO_NEAREST_MON,
     SAT_SUN_TO_NEXT_MON,
     SAT_SUN_TO_NEXT_MON_TUE,
+    SAT_TO_MON_AND_SUN_MON_TO_NEXT_TUE,
     SUN_TO_NEXT_MON,
     SUN_TO_NEXT_TUE,
 )
@@ -133,11 +134,11 @@ class Canada(ObservedHolidayBase, ChristianHolidays, InternationalHolidays, Stat
             # Remembrance Day.
             self._add_observed(self._add_remembrance_day(tr("Remembrance Day")))
 
-        self._add_observed(self._christmas_day, rule=SAT_SUN_TO_NEXT_MON_TUE)
+        self._add_observed(self._christmas_day, rule=SAT_SUN_TO_NEXT_MON)
 
         # Boxing Day.
         self._add_observed(
-            self._add_christmas_day_two(tr("Boxing Day")), rule=SAT_SUN_TO_NEXT_MON_TUE
+            self._add_christmas_day_two(tr("Boxing Day")), rule=SAT_TO_MON_AND_SUN_MON_TO_NEXT_TUE
         )
 
     def _populate_optional_holidays(self):
@@ -146,12 +147,12 @@ class Canada(ObservedHolidayBase, ChristianHolidays, InternationalHolidays, Stat
 
         # Christmas Day.
         self._add_observed(
-            self._add_christmas_day(tr("Christmas Day")), rule=SAT_SUN_TO_NEXT_MON_TUE
+            self._add_christmas_day(tr("Christmas Day")), rule=SAT_SUN_TO_NEXT_MON
         )
 
         # Boxing Day.
         self._add_observed(
-            self._add_christmas_day_two(tr("Boxing Day")), rule=SAT_SUN_TO_NEXT_MON_TUE
+            self._add_christmas_day_two(tr("Boxing Day")), rule=SAT_TO_MON_AND_SUN_MON_TO_NEXT_TUE
         )
 
     def _add_thanksgiving_day(self):
