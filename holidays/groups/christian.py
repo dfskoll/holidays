@@ -122,7 +122,7 @@ class ChristianHolidays:
         Day, or sometimes Holy Thursday.
         https://en.wikipedia.org/wiki/Feast_of_the_Ascension
         """
-        print("OMIT [easterdate($Uy+39)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)+39] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +39))
 
     def _add_ash_monday(self, name) -> date:
@@ -278,7 +278,7 @@ class ChristianHolidays:
         of Jesus Christ in the elements of the Eucharist.
         https://en.wikipedia.org/wiki/Feast_of_Corpus_Christi
         """
-        print("OMIT [easterdate($Uy+60)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)+60] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, +60))
 
     def _add_easter_monday(self, name, calendar=None) -> date:
@@ -312,7 +312,7 @@ class ChristianHolidays:
         Easter Tuesday is the third day of Eastertide and is a holiday in some areas.
         https://en.wikipedia.org/wiki/Easter_Tuesday
         """
-        print("OMIT [easterdate($Uy+2)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)+2] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self.__get_easter_sunday(calendar), +2))
 
     def _add_epiphany_day(self, name, calendar=None) -> date:
