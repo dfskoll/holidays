@@ -161,7 +161,7 @@ class ObservedHolidayBase(HolidayBase):
                 wd = wd + 1
                 if (wd == 7):
                     wd = 0
-                print("REM %d month_%d SATISFY [$Tw == %d] SCANFROM -28 ADDOMIT MSG %s" % (dt_next.day, dt_next.month, wd, name))
+                print("REM %d month_%d SCANFROM -28 ADDOMIT SATISFY [$Tw == %d] MSG %s" % (dt_next.day, dt_next.month, wd, name))
             elif (adj == 7):
                 print("REM %d month_%d OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 MSG %s" % (dt.day, dt.month, name))
             elif (adj == -7):

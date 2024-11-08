@@ -133,7 +133,7 @@ class ChristianHolidays:
         or Green Monday. The first day of Great Lent.
         https://en.wikipedia.org/wiki/Clean_Monday
         """
-        print("OMIT [easterdate($Uy-48)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)-48] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -48))
 
     def _add_ash_wednesday(self, name) -> date:
@@ -143,7 +143,7 @@ class ChristianHolidays:
         A holy day of prayer and fasting. It marks the beginning of Lent.
         https://en.wikipedia.org/wiki/Ash_Wednesday
         """
-        print("OMIT [easterdate($Uy-46)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)-46] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -46))
 
     def _add_assumption_of_mary_day(self, name, calendar=None) -> date:
@@ -184,7 +184,7 @@ class ChristianHolidays:
         the liturgical season of Lent.
         https://en.wikipedia.org/wiki/Carnival
         """
-        print("OMIT [easterdate($Uy-49)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)-49] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -49))
 
     def _add_carnival_monday(self, name) -> date:
@@ -195,7 +195,7 @@ class ChristianHolidays:
         the liturgical season of Lent.
         https://en.wikipedia.org/wiki/Carnival
         """
-        print("OMIT [easterdate($Uy-48)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)-48] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -48))
 
     def _add_carnival_tuesday(self, name) -> date:
@@ -206,7 +206,7 @@ class ChristianHolidays:
         the liturgical season of Lent.
         https://en.wikipedia.org/wiki/Carnival
         """
-        print("OMIT [easterdate($Uy-47)] MSG %s" % (name))
+        print("OMIT [easterdate($Uy)-47] MSG %s" % (name))
         return self._add_holiday(name, _timedelta(self._easter_sunday, -47))
 
     def _add_christmas_day(self, name, calendar=None) -> date:
