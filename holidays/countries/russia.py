@@ -47,8 +47,11 @@ class Russia(ObservedHolidayBase, ChristianHolidays, InternationalHolidays, Stat
         else:
             # New Year Holidays.
             name = tr("Новогодние каникулы")
-            for day in range(1, 6):
-                self._add_holiday(name, JAN, day)
+            self._add_holiday_jan_1(name)
+            self._add_holiday_jan_2(name)
+            self._add_holiday_jan_3(name)
+            self._add_holiday_jan_4(name)
+            self._add_holiday_jan_5(name)
             if self._year >= 2013:
                 self._add_holiday_jan_6(name)
                 self._add_holiday_jan_8(name)
