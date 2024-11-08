@@ -2,12 +2,12 @@
 holidays
 ========
 
-* WARNING: This is a hacked fork of the original code.  DO NOT USE IT.
-  It is useful only for generating holiday files for Remind
-  (https://dianne.skoll.ca/projects/remind/).  The code has been modified
-  in horrible ways to make this work; I'm putting this on GitHub just
-  so there's a backup somewhere and in case anyone wants to see how
-  it works. *
+WARNING: This is a hacked fork of the original code.  DO NOT USE IT.
+It is useful only for generating holiday files for Remind
+(https://dianne.skoll.ca/projects/remind/).  The code has been modified
+in horrible ways to make this work; I'm putting this on GitHub just
+so there's a backup somewhere and in case anyone wants to see how
+it works.
 
 A fast, efficient Python library for generating country- and subdivision- (e.g.
 state or province) specific sets of government-designated holidays on the fly.
