@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use Data::Dumper;
 my $map = {
         '1st' => 'First',
             '2nd' => 'Second',
@@ -109,61 +110,53 @@ if (defined($output_dir)) {
         }
 }
 
-my @lines = ();
 my $in_subdiv = 0;
 my $country;
 my $subdivs;
 my $long_name;
 my $subdiv;
+my $type;
+my $subdiv_lines = {};
 my $country_lines = {};
 my $category = 'public';
 while(<STDIN>) {
         my $line = $_;
         next if $line =~ /EASTERN:/;
         if ($line =~ /^# COUNTRY\s+(\S+)\s+(\d+)\s+(\S.*)$/) {
-                output(\@lines);
+                output($country);
                 $country = $1;
                 $subdivs = $2;
                 $long_name = $3;
-                @lines = ();
+                $subdiv_lines = {};
+                $country_lines = {};
                 $in_subdiv = 0;
                 $subdiv = undef;
                 $category = 'public';
-                print $line unless defined($output_dir);
                 next;
         } elsif ($line =~ /^# SUBDIV\s+(.*)/) {
-                output(\@lines);
                 $in_subdiv = 1;
                 $subdiv = $1;
-                @lines = ();
                 $category = 'public';
-                print $line unless defined($output_dir);
                 next;
         } elsif ($line =~ /^# CATEGORY\s+(\S+)/) {
                 $category = $1;
-                print $line unless defined($output_dir);
                 next;
         }
         while (my ($k, $v) = each(%$map)) {
                 $line =~ s/\b$k\b/$v/g;
         }
         $line = fixup_line($line);
-        next if $country_lines->{$country}->{$line};
-
-        my $fixed_line = $line;
-        # Only public and government holidays should have OMIT
         if ($category ne 'public' && $category ne 'government') {
-                $fixed_line =~ s/^OMIT\b/REM/;
-                $fixed_line =~ s/\bADDOMIT //;
+                $type = 'optional';
+        } else {
+                $type = 'public';
         }
-        if (!$in_subdiv) {
-                $country_lines->{$country}->{$line} = 1;
-        }
-        push(@lines, $fixed_line);
-}
 
-if (scalar(@lines)) {
-        output(\@lines);
+        if (!$in_subdiv) {
+                push(@{$country_lines->{$type}}, $line);
+        } else {
+                push(@{$subdiv_lines->{$subdiv}->{$type}}, $line);
+        }
 }
 
 sub fixup_line_1
@@ -224,6 +217,7 @@ sub fixup_line_2
         return "REM $wkday $day " . $num_to_month->{$monnum} . " ADDOMIT SCANFROM -28 MSG $second\n";
 }
 
+
 sub fixup_line
 {
         my ($line) = @_;
@@ -236,13 +230,33 @@ sub fixup_line
         return $line;
 }
 
+sub remove_output_file
+{
+        my ($country, $subdiv) = @_;
+        return undef unless $country;
+        my $fname;
+        my $lcc = lc($country);
+        $lcc =~ s/\s/_/g;
+        if ($subdiv) {
+                my $lcs = lc($subdiv);
+                $lcs =~ s/\s/_/g;
+                $fname = "$output_dir/$lcc/$lcs.rem";
+        } else {
+                $fname = "$output_dir/$lcc.rem";
+        }
+        unlink($fname);
+}
+
 sub open_output_file
 {
+        my ($country, $subdiv) = @_;
         return undef unless $country;
         my $fp;
         my $lcc = lc($country);
+        $lcc =~ s/\s/_/g;
         if ($subdiv) {
                 my $lcs = lc($subdiv);
+                $lcs =~ s/\s/_/g;
                 if (! -d "$output_dir/$lcc") {
                         mkdir("$output_dir/$lcc") or die("Cannot create directory $output_dir/$lcc: $!");
                 }
@@ -286,18 +300,42 @@ EOF
 
 sub output
 {
-        my ($lines) = @_;
+        my ($country) = @_;
         my $fp;
 
-        return unless scalar(@$lines);
+        my @lines;
+        my $seen;
+        my $subdiv_seen;
+        my $did_something = 0;
+        return unless $country;
+
+        # Do the country lines first
         if ($output_dir) {
-                $fp = open_output_file();
+                $fp = open_output_file($country, undef);
+        } else {
+                print "# COUNTRY $country\n";
         }
-        @$lines = sort { sort_function($a, $b) } (@$lines);
-        my $prev = '';
-        foreach my $line (@$lines) {
-                next if $line eq $prev;
-                $prev = $line;
+
+        # Country-level public holidays
+        @lines = sort { sort_function($a, $b) } (@{$country_lines->{public}});
+        foreach my $line (@lines) {
+                next if $seen->{$line};
+                $seen->{$line} = 1;
+                $did_something = 1;
+                if ($output_dir) {
+                        $fp->print($line);
+                } else {
+                        print $line;
+                }
+        }
+
+        # Country-level optional holidays
+        @lines = sort { sort_function($a, $b) } (@{$country_lines->{optional}});
+        foreach my $line (@lines) {
+                next if $seen->{$line};
+                $seen->{$line} = 1;
+                $line = adjust_optional($line);
+                $did_something = 1;
                 if ($output_dir) {
                         $fp->print($line);
                 } else {
@@ -306,7 +344,71 @@ sub output
         }
         if ($output_dir) {
                 $fp->close();
+                if (!$did_something) {
+                        remove_output_file($country, undef);
+                }
         }
+
+        # Now the subdivisions
+        foreach my $subdiv (sort { $a cmp $b } (keys(%$subdiv_lines))) {
+                # Do nothing if there are no lines
+                if (scalar(@{$subdiv_lines->{$subdiv}->{public}}) == 0 && scalar(@{$subdiv_lines->{$subdiv}->{optional}}) == 0) {
+                        return;
+                }
+                if ($output_dir) {
+                        $fp = open_output_file($country, $subdiv);
+                }
+                $did_something = 0;
+                $subdiv_seen = {};
+                # Subdivision-level public holidays
+                @lines = sort { sort_function($a, $b) } (@{$subdiv_lines->{$subdiv}->{public}});
+                foreach my $line (@lines) {
+                        next if $seen->{$line};
+                        next if $subdiv_seen->{$line};
+                        $subdiv_seen->{$line} = 1;
+                        if (!$output_dir) {
+                                print "# SUBDIV $subdiv\n" unless $did_something;
+                        }
+                        $did_something = 1;
+                        if ($output_dir) {
+                                $fp->print($line);
+                        } else {
+                                print $line;
+                        }
+                }
+
+                # Subdivision-level optional holidays
+                @lines = sort { sort_function($a, $b) } (@{$subdiv_lines->{$subdiv}->{optional}});
+                foreach my $line (@lines) {
+                        next if $seen->{$line};
+                        next if $subdiv_seen->{$line};
+                        $subdiv_seen->{$line} = 1;
+                        $line = adjust_optional($line);
+                        if (!$output_dir) {
+                                print "# SUBDIV $subdiv\n" unless $did_something;
+                        }
+                        $did_something = 1;
+                        if ($output_dir) {
+                                $fp->print($line);
+                        } else {
+                                print $line;
+                        }
+                }
+                if ($output_dir) {
+                        $fp->close();
+                        if (!$did_something) {
+                                remove_output_file($country, $subdiv);
+                        }
+                }
+        }
+}
+
+sub adjust_optional
+{
+        my ($line) = @_;
+        $line =~ s/^OMIT /REM /;
+        $line =~ s/ ADDOMIT / /;
+        return $line;
 }
 
 sub sort_function
@@ -340,6 +442,13 @@ sub calculate_sort_number
         } elsif ($line =~ /easterdate/) {
                 $mon = 3;
                 $day = 15;
+                my $ans = $mon*31 + $day;
+                if ($line =~ /Uy\)+(\d+)/) {
+                        $ans += $1;
+                } elsif ($line =~ /Uy\)-(\d+)/) {
+                        $ans -= $1;
+                }
+                return $ans;
         }
         if (defined($mon) && defined($day)) {
                 my $ans = $mon*31 + $day;
