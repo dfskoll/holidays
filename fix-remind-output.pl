@@ -218,9 +218,22 @@ sub fixup_line_2
 }
 
 
+sub fixup_working_day_line
+{
+        my ($line) = @_;
+        my($rem, $day, $month, $omit) = split(/ /, $line);
+        my $monnum = $month_to_num->{lc($month)} + 1;
+        $line =~ s/ OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 / OMIT SAT SUN AFTER ADDOMIT SCANFROM -28 MAYBE-UNCOMPUTABLE SATISFY [wkdaynum(date(\$Ty, $monnum, $day))==0 || wkdaynum(date(\$Ty, $monnum, $day))==6] /;
+        return $line;
+}
+
 sub fixup_line
 {
         my ($line) = @_;
+        if ($line =~ / OMIT SAT SUN /) {
+                return fixup_working_day_line($line);
+        }
+
         return $line unless ($line =~ /^FIXUP([12])/);
         if ($1 eq '1') {
                 return fixup_line_1($line);
