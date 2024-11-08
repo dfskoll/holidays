@@ -116,8 +116,10 @@ my $subdivs;
 my $long_name;
 my $subdiv;
 my $country_lines = {};
+my $category = 'public';
 while(<STDIN>) {
         my $line = $_;
+        next if $line =~ /EASTERN:/;
         if ($line =~ /^# COUNTRY\s+(\S+)\s+(\d+)\s+(\S.*)$/) {
                 output(\@lines);
                 $country = $1;
@@ -126,6 +128,7 @@ while(<STDIN>) {
                 @lines = ();
                 $in_subdiv = 0;
                 $subdiv = undef;
+                $category = 'public';
                 print $line unless defined($output_dir);
                 next;
         } elsif ($line =~ /^# SUBDIV\s+(.*)/) {
@@ -133,20 +136,30 @@ while(<STDIN>) {
                 $in_subdiv = 1;
                 $subdiv = $1;
                 @lines = ();
+                $category = 'public';
+                print $line unless defined($output_dir);
+                next;
+        } elsif ($line =~ /^# CATEGORY\s+(\S+)/) {
+                $category = $1;
                 print $line unless defined($output_dir);
                 next;
         }
-
-        next if $line =~ /EASTERN:/;
         while (my ($k, $v) = each(%$map)) {
                 $line =~ s/\b$k\b/$v/g;
         }
         $line = fixup_line($line);
         next if $country_lines->{$country}->{$line};
-        push(@lines, $line);
+
+        my $fixed_line = $line;
+        # Only public and government holidays should have OMIT
+        if ($category ne 'public' && $category ne 'government') {
+                $fixed_line =~ s/^OMIT\b/REM/;
+                $fixed_line =~ s/\bADDOMIT //;
+        }
         if (!$in_subdiv) {
                 $country_lines->{$country}->{$line} = 1;
         }
+        push(@lines, $fixed_line);
 }
 
 if (scalar(@lines)) {
